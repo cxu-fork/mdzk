@@ -9,12 +9,13 @@ use crate::{
 use anyhow::Context;
 use pest::Parser;
 use pulldown_cmark::{CowStr, Event, Tag};
+use serde::Serialize;
 use std::{
     collections::HashMap,
     path::{Path, PathBuf},
 };
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq, Serialize)]
 pub enum Edge {
     Connected,
     NotConnected,

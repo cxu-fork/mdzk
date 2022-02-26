@@ -3,8 +3,8 @@ pub(crate) mod link;
 use crate::{error::Result, note::link::Edge};
 use chrono::{DateTime, NaiveDate};
 use gray_matter::{engine::YAML, Matter, Pod};
-use pulldown_cmark::{Parser, Options};
-use serde::Deserialize;
+use pulldown_cmark::{Options, Parser};
+use serde::{Deserialize, Serialize};
 use std::{
     collections::{hash_map::DefaultHasher, HashMap},
     hash::{Hash, Hasher},
@@ -34,7 +34,7 @@ impl FromHash for NoteId {
 ///
 /// # Example
 ///
-/// Since the content adheres to CommonMark, you can easily convert it into HTML by using a 
+/// Since the content adheres to CommonMark, you can easily convert it into HTML by using a
 /// Markdown parser like e.g. [pulldown-cmark](https://github.com/raphlinus/pulldown-cmark).
 ///
 /// ```
@@ -52,7 +52,7 @@ impl FromHash for NoteId {
 ///     assert!(!html_output.is_empty())
 /// }
 /// ```
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq, Serialize)]
 pub struct Note {
     /// The title of a note.
     pub title: String,
@@ -63,6 +63,8 @@ pub struct Note {
     /// The tags assigned to the note.
     pub tags: Vec<String>,
     /// The date assigned to the note.
+    // FIXME use a supported date format
+    #[serde(skip_serializing)]
     pub date: Option<chrono::NaiveDateTime>,
     /// The full content of the note, in [CommonMark](https://commonmark.org/).
     ///
@@ -71,7 +73,7 @@ pub struct Note {
     /// extensions in the [`pulldown_cmark::Options`] struct.
     ///
     /// You can of course use add any other extensions when parsing the content - like e.g. math
-    /// support with Pandoc - but mdzk can not guarantee that internal links won't interfere with 
+    /// support with Pandoc - but mdzk can not guarantee that internal links won't interfere with
     /// it. Say you had the following note:
     ///
     /// ```markdown
@@ -79,9 +81,9 @@ pub struct Note {
     /// also has some closing square brackets ]].
     /// ```
     ///
-    /// mdzk would probably throw an 
+    /// mdzk would probably throw an
     /// [`Error::InvalidInternalLinkDestination`](crate::error::Error::InvalidInternalLinkDestination) on
-    /// parsing of this note, since `\sin(x) + 1) \cdot \frac{1}{x})$$. It also has some 
+    /// parsing of this note, since `\sin(x) + 1) \cdot \frac{1}{x})$$. It also has some
     /// closing square brackets ` likely is not the title of another note. By default, mdzk ignores
     /// these errors and everything would proceed like expected, but it is worth being aware that
     /// we have no concept of any Markdown constructs other than those supported by

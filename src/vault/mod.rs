@@ -1,10 +1,8 @@
 mod builder;
 
+pub use crate::note::{link::Edge, Note, NoteId};
 pub use builder::VaultBuilder;
-pub use crate::note::{
-    link::Edge,
-    Note, NoteId,
-};
+use serde::Serialize;
 
 use std::collections::HashMap;
 
@@ -12,7 +10,7 @@ use std::collections::HashMap;
 ///
 /// The graph is represented as an adjacency matrix. This gives fast lookup times and allows the
 /// discovery of backlinks to be very quick.
-#[derive(Default, Debug)]
+#[derive(Default, Debug, Serialize, Clone)]
 pub struct Vault {
     notes: HashMap<NoteId, Note>,
     id_lookup: HashMap<String, NoteId>,
@@ -21,13 +19,17 @@ pub struct Vault {
 impl Vault {
     /// An iterator visiting all pairs of IDs and corresponding notes in an arbitrary order.
     pub fn iter(&self) -> Notes {
-        Notes { base: self.notes.iter() }
+        Notes {
+            base: self.notes.iter(),
+        }
     }
 
     /// An iterator visiting all pairs of IDs and corresponding notes in an arbitrary order, with
     /// mutable references to the notes.
     pub fn iter_mut(&mut self) -> NotesMut {
-        NotesMut { base: self.notes.iter_mut() }
+        NotesMut {
+            base: self.notes.iter_mut(),
+        }
     }
 
     /// Gets a reference to a [`Note`] by it's [`NoteId`].
@@ -132,7 +134,6 @@ impl<'a> Iterator for Notes<'a> {
         self.base.next()
     }
 }
-
 
 pub struct NotesMut<'a> {
     base: std::collections::hash_map::IterMut<'a, NoteId, Note>,
