@@ -4,6 +4,8 @@ on:
   push:
     tags:
       - '[0-9]+.[0-9]+.[0-9]'
+  workflow_dispatch:
+  
 
 jobs:
   build-linux:
@@ -55,6 +57,9 @@ jobs:
       - name: Build
         run: |
           cargo build --release
+          pwd
+          dir .
+          dir "target\release\"
           Ren "target\release\mdzk.exe" "target\release\mdzk-x86_64-windows.exe"
       - name: Release
         uses: softprops/action-gh-release@v1
