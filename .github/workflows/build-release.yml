@@ -57,10 +57,17 @@ jobs:
       - name: Build
         run: |
           cargo build --release
+
+      - name: debug
+        run: |
           pwd
           dir .
           dir "target\release\"
+
+      - name: rename
+        run: |
           Ren "target\release\mdzk.exe" "target\release\mdzk-x86_64-windows.exe"
+
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
